@@ -1,4 +1,4 @@
-use std::sync::mpsc::{channel, Receiver, RecvError};
+use std::sync::mpsc::{channel, Receiver};
 
 use crate::{
     macros::get_string,
@@ -131,10 +131,11 @@ impl UnsafeSCShareableContent {
         let handler = ConcreteBlock::new(move |sc: *mut Self, error: *mut Object| {
             if error.is_null() {
                 tx.send(Ok(Id::from_ptr(sc)))
-                    .expect("could create owned pointer for UnsafeSCShareableContent");
+                    .expect("could not create owned pointer for UnsafeSCShareableContent");
             } else {
                 let code: *mut NSString = msg_send![error, localizedDescription];
-                tx.send(Err((*code).as_str().to_string()));
+                tx.send(Err((*code).as_str().to_string()))
+                    .expect("could not send error");
             }
         });
         (handler.copy(), rx)
