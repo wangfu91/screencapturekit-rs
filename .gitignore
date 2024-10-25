@@ -12,3 +12,4 @@ Cargo.lock
 # Ignore example outputs
 *.jpg
 *.raw
+.DS_Store
